@@ -24,7 +24,7 @@ npm install -g @cablate/mcp-google-calendar
 ### Cli
 
 ```bash
-mcp-calendar
+mcp-google-calendar
 ```
 
 ### With [Dive Desktop](https://github.com/OpenAgentPlatform/Dive)
