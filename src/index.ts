@@ -174,7 +174,7 @@ function formatEventsList(events: calendar_v3.Schema$Event[]): string {
   return events
     .map((event) => {
       return `
-      ID
+ID: ${event.id}
 Event: ${event.summary}
 Description: ${event.description || "None"}
 Start Time: ${new Date(event.start?.dateTime || "").toLocaleString()}
