@@ -1,6 +1,6 @@
 {
   "name": "@cablate/mcp-google-calendar",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "type": "module",
   "description": "MCP server that provides google calendar capabilities",
   "main": "dist/index.cjs",
