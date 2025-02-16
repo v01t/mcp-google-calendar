@@ -11,6 +11,10 @@ A powerful Model Context Protocol (MCP) server providing comprehensive calendar 
 - Update existing events
 - Delete events
 
+## Demo on Dive Desktop
+
+![Calendar Tools Demo](docs/Demo-on-Dive-Desktop.png)
+
 ## Installation
 
 ### Manual Installation
@@ -68,7 +72,6 @@ Here is the simple steps to create a google service account and credentials:
 11. Download the JSON file and save it as `credentials.json`
 
 if still got any question, google and find the answer.
-
 
 ## License
 
