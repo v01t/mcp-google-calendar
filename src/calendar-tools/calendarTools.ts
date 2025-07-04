@@ -14,11 +14,13 @@ export const CREATE_EVENT_TOOL = {
       },
       startTime: {
         type: "string",
-        description: "Event start time (ISO format)",
+        format: "date-time",
+        description: "Event start time (ISO 8601 format, e.g. 2025-07-04T09:00:00+02:00)",
       },
       endTime: {
         type: "string",
-        description: "Event end time (ISO format)",
+        format: "date-time",
+        description: "Event end time (ISO 8601 format, e.g. 2025-07-04T10:00:00+02:00)",
       },
       attendees: {
         type: "array",
@@ -40,11 +42,12 @@ export const LIST_EVENTS_TOOL = {
     properties: {
       timeMin: {
         type: "string",
-        description: "Start time (ISO format)",
+        format: "date-time",
+        description: "Start time (ISO 8601 format)",
       },
       maxResults: {
         type: "number",
-        description: "Maximum number of results",
+        description: "Maximum number of results to return",
       },
     },
   },
@@ -73,11 +76,13 @@ export const UPDATE_EVENT_TOOL = {
           },
           startTime: {
             type: "string",
-            description: "New start time",
+            format: "date-time",
+            description: "New start time (ISO 8601 format)",
           },
           endTime: {
             type: "string",
-            description: "New end time",
+            format: "date-time",
+            description: "New end time (ISO 8601 format)",
           },
           attendees: {
             type: "array",

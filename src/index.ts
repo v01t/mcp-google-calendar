@@ -7,6 +7,7 @@ import { calendar_v3 } from "googleapis";
 
 import { createEvent, deleteEvent, listEvents, tools, updateEvent } from "./calendar-tools/_index.js";
 import { getAuthClient } from "./utils/auth.js";
+import { parseNaturalDate } from "./utils/index.js";
 
 const server = new Server(
   {
@@ -34,7 +35,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     }
 
     if (name === "create_event") {
-      const { summary, description, startTime, endTime, attendees } = args as {
+      let { summary, description, startTime, endTime, attendees } = args as {
         summary: string;
         description: string;
         startTime: string;
@@ -42,23 +43,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         attendees?: string[];
       };
 
+      const parsedStart = parseNaturalDate(startTime);
+      const parsedEnd = parseNaturalDate(endTime);
+
+      if (!parsedStart || !parsedEnd) {
+        return {
+          content: [{ type: "text", text: "❌ Could not parse start or end time. Please use a valid date format or natural phrase like 'tomorrow 2pm'." }],
+          isError: true,
+        };
+      }
+
       const result = await createEvent({
         summary,
         description,
-        startTime,
-        endTime,
+        startTime: parsedStart,
+        endTime: parsedEnd,
         attendees,
       });
 
       if (!result.success) {
         return {
-          content: [{ type: "text", text: `Error: ${result.error}` }],
+          content: [{ type: "text", text: `❌ Error creating event: ${result.error}` }],
           isError: true,
         };
       }
 
       return {
-        content: [{ type: "text", text: `Successfully created event: ${result.data?.summary || ""}` }],
+        content: [{ type: "text", text: `✅ Successfully created event: "${result.data?.summary || ""}" from ${parsedStart} to ${parsedEnd}` }],
         isError: false,
       };
     }
@@ -69,14 +80,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         maxResults?: number;
       };
 
+      const parsedTimeMin = timeMin ? parseNaturalDate(timeMin) : new Date().toISOString();
+
       const result = await listEvents({
-        timeMin: timeMin || new Date().toISOString(),
+        timeMin: parsedTimeMin || new Date().toISOString(),
         maxResults: maxResults || 10,
       });
 
       if (!result.success) {
         return {
-          content: [{ type: "text", text: `Error: ${result.error}` }],
+          content: [{ type: "text", text: `❌ Error listing events: ${result.error}` }],
           isError: true,
         };
       }
@@ -99,17 +112,23 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       };
 
-      const result = await updateEvent(eventId, updates);
+      const parsedUpdates = {
+        ...updates,
+        startTime: updates.startTime ? parseNaturalDate(updates.startTime) : undefined,
+        endTime: updates.endTime ? parseNaturalDate(updates.endTime) : undefined,
+      };
+
+      const result = await updateEvent(eventId, parsedUpdates);
 
       if (!result.success) {
         return {
-          content: [{ type: "text", text: `Error: ${result.error}` }],
+          content: [{ type: "text", text: `❌ Error updating event: ${result.error}` }],
           isError: true,
         };
       }
 
       return {
-        content: [{ type: "text", text: `Successfully updated event: ${result.data?.summary || ""}` }],
+        content: [{ type: "text", text: `✅ Successfully updated event: ${result.data?.summary || ""}` }],
         isError: false,
       };
     }
@@ -123,19 +142,19 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       if (!result.success) {
         return {
-          content: [{ type: "text", text: `Error: ${result.error}` }],
+          content: [{ type: "text", text: `❌ Error deleting event: ${result.error}` }],
           isError: true,
         };
       }
 
       return {
-        content: [{ type: "text", text: "Successfully deleted event" }],
+        content: [{ type: "text", text: "✅ Successfully deleted event" }],
         isError: false,
       };
     }
 
     return {
-      content: [{ type: "text", text: `Error: ${name} is an unknown tool` }],
+      content: [{ type: "text", text: `❌ Unknown tool: ${name}` }],
       isError: true,
     };
   } catch (error) {
@@ -143,7 +162,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       content: [
         {
           type: "text",
-          text: `Error: ${error instanceof Error ? error.message : String(error)}`,
+          text: `❌ Error: ${error instanceof Error ? error.message : String(error)}`,
         },
       ],
       isError: true,
@@ -153,20 +172,18 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
 async function runServer() {
   try {
-    // 先初始化認證
     await getAuthClient();
-
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("MCP Calendar Server started");
+    console.log("✅ MCP Calendar Server started");
   } catch (error) {
-    console.error("Server startup failed:", error);
+    console.error("❌ Server startup failed:", error);
     process.exit(1);
   }
 }
 
 runServer().catch((error) => {
-  console.error("Server encountered a critical error:", error);
+  console.error("❌ Server encountered a critical error:", error);
   process.exit(1);
 });
 
@@ -184,3 +201,4 @@ Attendees: ${event.attendees?.map((a: calendar_v3.Schema$EventAttendee) => a.ema
     })
     .join("\n\n");
 }
+

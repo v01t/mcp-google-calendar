@@ -1,35 +1,37 @@
 {
-  "name": "@cablate/mcp-google-calendar",
-  "version": "0.0.3",
+  "name": "@zion.cloud/mcp-google-calendar",
+  "version": "0.0.2",
   "type": "module",
   "description": "MCP server that provides google calendar capabilities",
   "main": "dist/index.cjs",
-  "license": "MIT",  
+  "license": "MIT",
   "scripts": {
     "build": "esbuild src/index.ts --bundle --platform=node --outfile=dist/index.cjs --external:pdfreader --external:jsdom --external:mammoth --external:csv-parse --external:libreoffice-convert && shx chmod +x dist/index.cjs",
+    "test": "vitest",
     "dev": "ts-node src/index.ts",
     "start": "node dist/index.cjs"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^2.1.0",
     "@modelcontextprotocol/sdk": "^1.5.0",
-    "esbuild": "^0.25.0",
-    "googleapis": "^105.0.0",
-    "shx": "^0.3.4",
-    "typescript": "^5.3.3"
+    "chrono-node": "^2.8.3",
+    "googleapis": "^105.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.11.16",
-    "ts-node": "^10.9.2"
+    "esbuild": "^0.25.0",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.4"
   },
-  "author": "CabLate",
+  "author": "zion.cloud",
   "files": [
     "dist",
-    "dist/**/*.map",
-    "README.md"
+    "dist/**/*.map"
   ],
   "bin": {
-    "mcp-doc-forge": "./dist/index.cjs"
+    "mcp-google-calendar": "./dist/index.cjs"
   },
   "keywords": [
     "mcp",
@@ -37,15 +39,17 @@
     "google-calendar",
     "google-api",
     "calendar",
-    "ai",
-    "dive"
+    "ai"
   ],
-  "homepage": "https://github.com/cablate/mcp-google-calendar#readme",
+  "engines": {
+    "node": ">=16"
+  },
+  "homepage": "https://github.com/v01t/mcp-google-calendar#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cablate/mcp-google-calendar.git"
+    "url": "git+https://github.com/v01t/mcp-google-calendar.git"
   },
   "bugs": {
-    "url": "https://github.com/cablate/mcp-google-calendar/issues"
+    "url": "https://github.com/v01t/mcp-google-calendar/issues"
   }
 }

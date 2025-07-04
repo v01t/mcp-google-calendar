@@ -1,6 +1,7 @@
 import { google } from "googleapis";
 import { getAuthClient } from "../utils/auth.js";
 import { convertToTimeZone } from "../utils/index.js";
+import { CALENDAR_ID, DEFAULT_TIME_ZONE } from "./constants.js";
 
 interface UpdateEventParams {
   summary?: string;
@@ -10,52 +11,44 @@ interface UpdateEventParams {
   attendees?: string[];
 }
 
-export async function updateEvent(eventId: string, updates: UpdateEventParams) {
+export async function updateEvent(
+  eventId: string,
+  updates: UpdateEventParams
+): Promise<{ success: boolean; data?: any; error?: string }> {
   try {
     const auth = await getAuthClient();
     const calendar = google.calendar({ version: "v3", auth });
 
-    // 先取得現有活動資料
-    const event = await calendar.events.get({
-      calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
-      eventId: eventId,
-    });
+    const existing = await calendar.events.get({ calendarId: CALENDAR_ID, eventId });
 
-    // 準備更新的資料
-    const updatedEvent = {
-      ...event.data,
-      summary: updates.summary || event.data.summary,
-      description: updates.description || event.data.description,
+    const updated = {
+      ...existing.data,
+      summary: updates.summary ?? existing.data.summary,
+      description: updates.description ?? existing.data.description,
       start: updates.startTime
         ? {
-            dateTime: convertToTimeZone(updates.startTime, process.env.GOOGLE_TIME_ZONE || "Asia/Taipei"),
-            timeZone: process.env.GOOGLE_TIME_ZONE || "Asia/Taipei",
+            dateTime: convertToTimeZone(updates.startTime, DEFAULT_TIME_ZONE),
+            timeZone: DEFAULT_TIME_ZONE,
           }
-        : event.data.start,
+        : existing.data.start,
       end: updates.endTime
         ? {
-            dateTime: convertToTimeZone(updates.endTime, process.env.GOOGLE_TIME_ZONE || "Asia/Taipei"),
-            timeZone: process.env.GOOGLE_TIME_ZONE || "Asia/Taipei",
+            dateTime: convertToTimeZone(updates.endTime, DEFAULT_TIME_ZONE),
+            timeZone: DEFAULT_TIME_ZONE,
           }
-        : event.data.end,
-      attendees: updates.attendees ? updates.attendees.map((email) => ({ email })) : event.data.attendees,
+        : existing.data.end,
+      attendees: updates.attendees ? updates.attendees.map((email) => ({ email })) : existing.data.attendees,
     };
 
     const result = await calendar.events.update({
-      calendarId: process.env.GOOGLE_CALENDAR_ID || "primary",
-      eventId: eventId,
-      requestBody: updatedEvent,
+      calendarId: CALENDAR_ID,
+      eventId,
+      requestBody: updated,
       sendUpdates: "all",
     });
 
-    return {
-      success: true,
-      data: result.data,
-    };
+    return { success: true, data: result.data };
   } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Error updating event",
-    };
+    return { success: false, error: error instanceof Error ? error.message : "Unknown error while updating event" };
   }
 }

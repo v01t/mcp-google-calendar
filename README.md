@@ -11,12 +11,6 @@ A powerful Model Context Protocol (MCP) server providing comprehensive calendar 
 - Update existing events
 - Delete events
 
-## Demo on Dive Desktop
-
-![Calendar Tools Demo](docs/Demo-on-Dive-Desktop.png)
-
-## Installation
-
 ### Manual Installation
 
 ```bash
@@ -31,17 +25,14 @@ npm install -g @cablate/mcp-google-calendar
 mcp-google-calendar
 ```
 
-### With [Dive Desktop](https://github.com/OpenAgentPlatform/Dive)
-
-1. Click "+ Add MCP Server" in Dive Desktop
-2. Copy and paste this configuration:
+### MCP Server
 
 ```json
 {
   "mcpServers": {
     "calendar": {
       "command": "npx",
-      "args": ["-y", "@cablate/mcp-google-calendar"],
+      "args": ["-y", "@zion.cloud/mcp-google-calendar"],
       "env": {
         "GOOGLE_CALENDAR_ID": "your_calendar_id",
         "GOOGLE_TIME_ZONE": "your_time_zone",
@@ -52,8 +43,6 @@ mcp-google-calendar
   }
 }
 ```
-
-3. Click "Save" to install the MCP server
 
 ## Google Service Account and Credentials
 
@@ -84,12 +73,3 @@ Welcome community participation and contributions! Here are ways to contribute:
 - ⭐️ Star the project if you find it helpful
 - 🐛 Submit Issues: Report problems or provide suggestions
 - 🔧 Create Pull Requests: Submit code improvements
-
-## Contact
-
-If you have any questions or suggestions, feel free to reach out:
-
-- 📧 Email: [reahtuoo310109@gmail.com](mailto:reahtuoo310109@gmail.com)
-- 📧 GitHub: [CabLate](https://github.com/cablate/)
-- 🤝 Collaboration: Welcome to discuss project cooperation
-- 📚 Technical Guidance: Sincere welcome for suggestions and guidance
